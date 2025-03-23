@@ -1,53 +1,56 @@
 # Tianguix
-Tianguix is the implementation of an order book as used on a financial market.
 
-An order book is at the heart of any market, whether flowers, financial, or anything.
+**Tianguix** aims to be a "marketplace in a box": offer a one-stop shop for all the essential infrastructure needed to create a marketplace. Initially, I envisioned it as just an order book, but adding a few more features will make it actually useful and more fun to write.  
 
+Marketplaces come in many forms, but the two most relevant to me are:  
+- **Simple auctions**  
+- **Continuous two-sided (buyer/seller) auctions**  
 
-The idea behind it is to concentrate the interest of buyers and sellers by aggregating their orders (or interest) in firm orders (the other being a quotation market, which can take a similar form)
+At the same time, marketplaces require certain features to be workable in today's infrastructure. Below is a wishlist of capabilities that I would like to see in a "marketplace in a box":  
+- A **flexible yet simple order book** with an intuitive interface and limited but effective order-matching options.  
+- An **auction book** supporting [[English auctions|https://en.wikipedia.org/wiki/Auction]] and Dutch auctions.  
+- **Reliable market data distribution**, ideally compact and fast, similar to what financial exchanges provide.  
 
+## Key Features  
 
-The idea is that transactions on a particular instrument (financial, like a stock, or something like a kind of entrance for a theather) can be aggregated in two ordered lists, one for buyers and one for sellers.
+- **Algorithmic flexibility**: While the initial implementation will be in Python (as it’s my strongest language), the design should allow multiple language implementations while maintaining computational efficiency, where we can always copy what we know works, particularly the use of binary trees to give constant complexity to the most common operations. (More to be worked here, of course)
+- **Single-threaded books/auctions**: The current standard in most markets is a single-threaded process where orders are added in a time-based or first-come, first-served manner. This aligns with how most major exchanges operate today. 
+- **Deployment options**:  
+  - A modular, **dockable architecture** for easy deployment as a functional exchange.  
+  - **Seamless testing and back-testing capabilities**, ensuring ease of simulation and validation.  
 
+## The Core Idea  
 
-Each list has the size (amount of the particular instrument willing to transact) and the price (at which the buyer or seller is willing to close the transaction. Additional attributes can be added to represent priority (two orders with the same price will be fullfilled FIFO in time, i.e. first to come in time will be filled first)
+Tianguix implements an order book that is used in financial markets.  
 
+At its core, an **order book** centralizes buyers' and sellers' interests by aggregating their firm orders (as opposed to a quotation-based market, which may operate differently).  
 
-For a bit of formality, lets suppose we have two lists:
-B = {b1, b2, …, bn} where bi represents someone that wants to buy bi.size at bi.prize
-S = {s1, s2, ... , sn} where si represents someone that wants to sell s1. At s1 prize.
+Transactions for a specific instrument (e.g., a stock or concert ticket) can be structured into two ordered lists:  
+- **Buyers** list (demand)  
+- **Sellers** list (supply)  
 
+Each order contains:  
+- **Size**: The quantity of the instrument to be transacted.  
+- **Price**: The price at which the buyer or seller is willing to execute the trade.  
+- **Priority**: Orders at the same price are filled on best-price first, then  **FIFO (first-in, first-out)** basis, meaning the earliest order takes precedence.  
 
-This abstraction allows to represent multiple transaction models. A few examples
+This foundation serves as the basis for auctions and order book mechanics.
 
+---
 
-Auction.
+# Buyers and Sellers in a Marketplace  
 
+## List B: Bids  
+**B** = {b₁, b₂, …, bₙ}, where each **bᵢ** represents an individual bid.  
 
-On an auction, a lot of size M is distributed amongst the highest bidders on a list. On this case the Auction is represented as:
-B = {b1, b2, .. , bn}
-S = empty
-And after a period of time, M is distributed amongts the first elements of B ordered by prize where sum(bi… bm) = M
+Each buyer has the following attributes:  
+- **bᵢ.size**: The quantity they wish to purchase.  
+- **bᵢ.price**: The price they are willing to pay.  
 
+## List O: Offers  
+**S** = {s₁, s₂, …, sₙ}, where each **sᵢ** represents an individual offer.  
 
-Continuous Market
+Each seller has the following attributes:  
+- **sᵢ.price**: The price at which they are willing to sell.  
 
-
-On a continuous market, each time that b1.price >= s1.price, a transaction between b1 and s1 at s1 price.
-
-
-
-
-
-
-Stock Market
-
-
-A collection of order books, each one with an allocation method (Auction, Continuous Market) for a particular type of stock.
-
-
-Ticket market
-
-
-A collection of order books, each one with an allocation method, for each kind of seat on the theather.
-
+This abstraction serves as the starting point for designing auctions and order books.  
