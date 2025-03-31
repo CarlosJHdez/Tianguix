@@ -5,23 +5,38 @@ import time
 
 
 class Side(Enum):
-    BID = "Bid"
-    ASK = "Ask"
-    NONE = "None"
+    BID = "Bid"  # Buy Side, represented by B
+    ASK = "Ask"  # Sell Side, represented by A
+    
+    def __str__(self):
+        return 'B' if self == Side.BID else 'A'
 
 
 class Order:
     """Represents an order in the order book."""
 
     def __init__(self, size, price, side):
-        self.size = size
-        self.price = price
-        self.side = side
-        self.ts_event = int(time.time_ns())
+        self.size = size  # Size or quantity of the order
+        self.price = price  # Price, assumed all prices are on the same currency.
+        self.side = side  # Side of the order (BID or ASK)
+        self.timestamp = int(time.time_ns())  # Timestamp in nanoseconds when the order was created for this order book.
         self.sequence = None  # Renamed from order_id
 
+    def __repr__(self):
+        return f"Order(size={self.size}, price={self.price}, side={self.side}, sequence={self.sequence})"
+
     def __str__(self):
-        return f"Order({self.side}{self.size} @{self.price})"
+        return f"Order: {self.side} {self.size} @ {self.price} (Sequence: {self.sequence})"
+
+    def to_html(self):
+        return f"""
+        <div class="order">
+            <span>Side: {self.side}</span><br>
+            <span>Size: {self.size}</span><br>
+            <span>Price: {self.price}</span><br>
+            <span>Sequence: {self.sequence}</span>
+        </div>
+        """
 
 
 class Trade:
@@ -34,8 +49,21 @@ class Trade:
         self.size = size
         self.price = price
 
+    def __repr__(self):
+        return f"Trade(size={self.size}, price={self.price}, bid_seq={self.bid_sequence}, ask_seq={self.ask_sequence})"
+
     def __str__(self):
-        return f"Trade(size={self.size} @ price={self.price})"
+        return f"Trade: {self.size} @ {self.price} (Bid Seq: {self.bid_sequence}, Ask Seq: {self.ask_sequence})"
+
+    def to_html(self):
+        return f"""
+        <div class="trade">
+            <span>Size: {self.size}</span><br>
+            <span>Price: {self.price}</span><br>
+            <span>Bid Sequence: {self.bid_sequence}</span><br>
+            <span>Ask Sequence: {self.ask_sequence}</span>
+        </div>
+        """
 
 
 class OrderBook:
@@ -90,11 +118,11 @@ class OrderBook:
         return self.executed_trades
 
     def get_order_book_str(self):
-        """Returns a formatted string representation of the order book with three columns: Bids, Price, Offers."""
+        """Returns a formatted string representation of the order book with enhanced pretty-printing."""
         output = []
-        output.append("\n" + "=" * 40)
-        output.append(f"{'BIDS':<10} | {'PRICE':^10} | {'OFFERS':>10}")
-        output.append("=" * 40)
+        output.append("\n" + "╔" + "═" * 38 + "╗")
+        output.append(f"║ {'BIDS':<10} │ {'PRICE':^10} │ {'OFFERS':>10} ║")
+        output.append("╠" + "═" * 10 + "╪" + "═" * 10 + "╪" + "═" * 10 + "╣")
 
         # Collect all unique prices from bids and offers
         bid_prices = {bid.price: bid.size for bid in self.bids}
@@ -106,7 +134,30 @@ class OrderBook:
         for price in all_prices:
             bid_str = f"{bid_prices[price]}" if price in bid_prices else "-"
             offer_str = f"{offer_prices[price]}" if price in offer_prices else "-"
-            output.append(f"{bid_str:<10} | {price:^10.2f} | {offer_str:>10}")
+            output.append(f"║ {bid_str:<10} │ {price:^10.2f} │ {offer_str:>10} ║")
 
-        output.append("=" * 40)
+        output.append("╚" + "═" * 10 + "╧" + "═" * 10 + "╧" + "═" * 10 + "╝")
         return "\n".join(output)
+
+    def __repr__(self):
+        return f"OrderBook(instrument_id={self.instrument_id}, bids={len(self.bids)} offers={len(self.offers)})"
+
+    def __str__(self):
+        return f"OrderBook for Instrument ID {self.instrument_id} with {len(self.bids) + len(self.offers)} orders"
+
+    def to_html(self):
+        bids_html = "".join(bid.to_html() for bid in self.bids)
+        offers_html = "".join(offer.to_html() for offer in self.offers)
+        return f"""
+        <div class="order-book">
+            <h2>OrderBook for Instrument ID {self.instrument_id}</h2>
+            <div class="bids">
+                <h3>Bids</h3>
+                {bids_html}
+            </div>
+            <div class="offers">
+                <h3>Offers</h3>
+                {offers_html}
+            </div>
+        </div>
+        """
