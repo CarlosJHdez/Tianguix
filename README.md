@@ -83,3 +83,9 @@ executions = order_book.match_orders()
 for execution in executions:
     print(f"Execution Report: {execution.quantity} {execution.symbol} @ {execution.price} for {execution.buyer} and {execution.seller}")
 ```
+
+---
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3. See the [LICENSE](./LICENSE) file for details.
