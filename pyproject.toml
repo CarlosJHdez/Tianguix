@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tianguix"
+version = "0.1.0"
+description = "A description of the Tianguix package"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+requires-python = ">=3.6"
+dependencies = []
+[project.urls]
+Homepage = "https://github.com/CarlosJHdez/Tianguix"
+BugTracker = "https://github.com/CarlosJHdez/Tianguix/issues"
+Documentation = "https://tianguix.readthedocs.io/en/latest/"
+SourceCode = "https://github.com/CarlosJHdez/Tianguix"
+
+[project.optional-dependencies]
+testing = [
+    "pytest>=8.0",
+    "pytest-cov>=6.0"
+]
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = "--cov=tianguix --cov-report=term-missing"
+testpaths = [
+    "tests"
+]
