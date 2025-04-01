@@ -6,8 +6,8 @@ INSTRUMENT_ID  = 2
 
 def test_order_simple_execution():
     book = OrderBook(INSTRUMENT_ID)
-    bid = Order(size=100, price=18.13, side=Side.BID)
-    offer = Order(size=100, price=18.13, side=Side.ASK)
+    bid = Order(size=100, price=18.13, side=Side.BID, sender="TraderA")
+    offer = Order(size=100, price=18.13, side=Side.ASK, sender="TraderB")
 
     book.add_order(bid)
     book.add_order(offer)
@@ -19,11 +19,12 @@ def test_order_simple_execution():
     assert trades[0].bid_sequence == bid.sequence
     assert trades[0].ask_sequence == offer.sequence
 
+
 def test_order_at_least_two_orders():
     book = OrderBook(INSTRUMENT_ID)
-    bid1 = Order(size=100, price=18.13, side=Side.BID)
-    bid2 = Order(size=100, price=18.13, side=Side.BID)
-    offer = Order(size=200, price=18.13, side=Side.ASK)
+    bid1 = Order(size=100, price=18.13, side=Side.BID, sender="TraderA")
+    bid2 = Order(size=100, price=18.13, side=Side.BID, sender="TraderB")
+    offer = Order(size=200, price=18.13, side=Side.ASK, sender="TraderC")
 
     book.add_order(bid1)
     book.add_order(bid2)

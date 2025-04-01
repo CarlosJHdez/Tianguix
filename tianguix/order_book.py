@@ -15,18 +15,19 @@ class Side(Enum):
 class Order:
     """Represents an order in the order book."""
 
-    def __init__(self, size, price, side):
+    def __init__(self, size, price, side, sender):
         self.size = size  # Size or quantity of the order
         self.price = price  # Price, assumed all prices are on the same currency.
         self.side = side  # Side of the order (BID or ASK)
+        self.sender = sender  # Identifier for the sender of the order
         self.timestamp = int(time.time_ns())  # Timestamp in nanoseconds when the order was created for this order book.
         self.sequence = None  # Renamed from order_id
 
     def __repr__(self):
-        return f"Order(size={self.size}, price={self.price}, side={self.side}, sequence={self.sequence})"
+        return f"Order(size={self.size}, price={self.price}, side={self.side}, sender={self.sender}, seq={self.sequence})"
 
     def __str__(self):
-        return f"Order: {self.side} {self.size} @ {self.price} (Sequence: {self.sequence})"
+        return f"Order: {self.side} {self.size} @ {self.price} (Sender: {self.sender}, Sequence: {self.sequence})"
 
     def to_html(self):
         return f"""
@@ -34,6 +35,7 @@ class Order:
             <span>Side: {self.side}</span><br>
             <span>Size: {self.size}</span><br>
             <span>Price: {self.price}</span><br>
+            <span>Sender: {self.sender}</span><br>
             <span>Sequence: {self.sequence}</span>
         </div>
         """
@@ -122,7 +124,7 @@ class OrderBook:
         output = []
         output.append("\n" + "╔" + "═" * 38 + "╗")
         output.append(f"║ {'BIDS':<10} │ {'PRICE':^10} │ {'OFFERS':>10} ║")
-        output.append("╠" + "═" * 10 + "╪" + "═" * 10 + "╪" + "═" * 10 + "╣")
+        output.append("╠" + "═" * 12 + "╪" + "═" * 12 + "╪" + "═" * 12 + "╣")
 
         # Collect all unique prices from bids and offers
         bid_prices = {bid.price: bid.size for bid in self.bids}
