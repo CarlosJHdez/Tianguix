@@ -121,14 +121,14 @@ class OrderBook:
 
     def get_order_book_str(self):
         """Returns a formatted string representation of the order book with enhanced pretty-printing."""
-        output = []
-        output.append("\n" + "╔" + "═" * 38 + "╗")
-        output.append(f"║ {'BIDS':<10} │ {'PRICE':^10} │ {'OFFERS':>10} ║")
-        output.append("╠" + "═" * 12 + "╪" + "═" * 12 + "╪" + "═" * 12 + "╣")
-
+        output = [
+            "\n" + "╔" + "═" * 38 + "╗",
+            f"║ {'BIDS':<10} │ {'PRICE':^10} │ {'OFFERS':>10} ║",
+            "╠" + "═" * 12 + "╪" + "═" * 12 + "╪" + "═" * 12 + "╣",
+        ]
         # Collect all unique prices from bids and offers
-        bid_prices = {bid.price: bid.size for bid in self.bids}
-        offer_prices = {offer.price: offer.size for offer in self.offers}
+        bid_prices = {bid.price: f"{bid.size} ({bid.sender})" for bid in self.bids}
+        offer_prices = {offer.price: f"{offer.size} ({offer.sender})" for offer in self.offers}
         all_prices = sorted(
             set(bid_prices.keys()).union(set(offer_prices.keys())), reverse=True
         )
@@ -138,7 +138,7 @@ class OrderBook:
             offer_str = f"{offer_prices[price]}" if price in offer_prices else "-"
             output.append(f"║ {bid_str:<10} │ {price:^10.2f} │ {offer_str:>10} ║")
 
-        output.append("╚" + "═" * 10 + "╧" + "═" * 10 + "╧" + "═" * 10 + "╝")
+        output.append("╚" + "═" * 12 + "╧" + "═" * 12 + "╧" + "═" * 12 + "╝")
         return "\n".join(output)
 
     def __repr__(self):
